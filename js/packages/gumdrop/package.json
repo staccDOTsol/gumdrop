@@ -2,7 +2,7 @@
   "name": "gumdrop",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://lwus.github.io/metaplex/",
+  "homepage": "git@github.com:staccDOTsol/gumdrop",
   "dependencies": {
     "@aws-sdk/client-lambda": "^3.38.0",
     "@aws-sdk/client-sesv2": "^3.38.0",
@@ -22,9 +22,9 @@
     "@progress/kendo-react-common": "^4.9.0",
     "@progress/kendo-react-grid": "^4.9.0",
     "@progress/kendo-react-inputs": "^4.9.0",
+    "@project-serum/anchor": "^0.14.0",
     "@project-serum/serum": "^0.13.52",
     "@project-serum/sol-wallet-adapter": "^0.2.5",
-    "@project-serum/anchor": "^0.14.0",
     "@reduxjs/toolkit": "^1.6.1",
     "@solana/spl-token": "^0.1.8",
     "@solana/spl-token-registry": "0.2.202",
@@ -55,6 +55,7 @@
     "eventemitter3": "^4.0.7",
     "events": "^3.3.0",
     "framer-motion": "^4",
+    "gh-pages": "^3.2.3",
     "identicon.js": "^2.3.3",
     "jazzicon": "^1.5.0",
     "lodash": "^4.17.20",
@@ -81,8 +82,10 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy:s3": "yarn export && aws s3 sync ../../build/web",
+    "deploy:ar": "yarn export && arweave deploy-dir  ../../build/web --key-file ",
+    "deploy:gh": "gh-pages -d ./build --repo git@github.com:staccDOTsol/gumdrop -t true",
+    "deploy": "cross-env ASSET_PREFIX=/gumdrop/ yarn build && yarn deploy:gh"
   },
   "browserslist": {
     "production": [
@@ -96,7 +99,5 @@
       "last 1 safari version"
     ]
   },
-  "devDependencies": {
-    "gh-pages": "^3.2.3"
-  }
+  "devDependencies": {}
 }
