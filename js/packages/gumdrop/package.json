@@ -78,7 +78,7 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "serve -s build",
     "build": "cd ../common && yarn && yarn build && cd ../gumdrop && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
