@@ -4,6 +4,7 @@
   "private": true,
   "homepage": "git@github.com:staccDOTsol/gumdrop",
   "dependencies": {
+    "serve": "latest",
     "@aws-sdk/client-lambda": "^3.38.0",
     "@aws-sdk/client-sesv2": "^3.38.0",
     "@aws-sdk/client-sns": "^3.40.0",
