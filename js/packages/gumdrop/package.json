@@ -76,8 +76,8 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "i": "npm i --legaccy-peer-deps --force",
-    "install": "npm i --legaccy-peer-deps --force",
+    "i": "npm i --legacy-peer-deps --force",
+    "install": "npm i --legacy-peer-deps --force",
     "start": "PORT=8080 react-scripts start --port 8080",
     "build": "cd ../common && yarn && yarn build && cd ../gumdrop && react-scripts build",
     "eject": "react-scripts eject",
