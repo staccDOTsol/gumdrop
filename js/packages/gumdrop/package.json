@@ -76,6 +76,7 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
+    "i": "npm i --legaccy-peer-deps --force",
     "install": "npm i --legaccy-peer-deps --force",
     "start": "serve -s build",
     "build": "cd ../common && yarn && yarn build && cd ../gumdrop && react-scripts build",
