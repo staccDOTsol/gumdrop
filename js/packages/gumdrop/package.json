@@ -78,7 +78,7 @@
   "scripts": {
     "i": "npm i --legaccy-peer-deps --force",
     "install": "npm i --legaccy-peer-deps --force",
-    "start": "serve -s build",
+    "start": "PORT=8080 react-scripts start --port 8080",
     "build": "cd ../common && yarn && yarn build && cd ../gumdrop && react-scripts build",
     "eject": "react-scripts eject",
     "deploy:s3": "yarn export && aws s3 sync ../../build/web",
