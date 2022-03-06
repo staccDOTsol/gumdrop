@@ -14,7 +14,6 @@
     "node": ">=14.17"
   },
   "scripts": {
-    "i": "npm i --legaccy-peer-deps --force",
     "install": "npm i --legaccy-peer-deps --force",
     "bootstrap": "lerna link && lerna bootstrap",
     "build": "lerna run build --scope gumdrop --scope @oyster/common",
