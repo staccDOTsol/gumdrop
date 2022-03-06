@@ -2,7 +2,7 @@
   "lerna": "3.4.3",
   "version": "independent",
   "packages": ["packages/*"],
-  "npmClient": "yarn",
+  "npmclient": "npm",
   "useWorkspaces": true,
   "publishConfig": {
     "access": "public",

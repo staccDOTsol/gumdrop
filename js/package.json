@@ -40,21 +40,11 @@
     "@solana/web3.js": "^1.33.0",
     "redstone-node": "0.4.21"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
   "prettier": {
     "arrowParens": "avoid",
     "semi": true,
     "singleQuote": true,
     "trailingComma": "all"
-  },
-  "commitlint": {
-    "extends": [
-      "@commitlint/config-conventional"
-    ]
   },
   "dependencies": {
     "@metaplex/arweave-cost": "^1.0.4",
