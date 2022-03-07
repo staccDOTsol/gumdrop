@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import queryString from 'query-string';

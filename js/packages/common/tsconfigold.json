@@ -8,15 +8,14 @@
 
     "composite": true,
     "declaration": true,
-    "declarationMap": true,
+    "declarationMap": false,
     "sourceMap": true,
     "jsx": "react",
-    "strict": true,
-    "noImplicitAny": true,
+    "strict": false,
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
+    "forceConsistentCasingInFileNames": false,
     "typeRoots": ["types", "../../types", "../../node_modules/@types"]
   },
   "files": ["src/config/userNames.json"],

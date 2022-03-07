@@ -2,7 +2,7 @@
   "name": "gumdrop",
   "version": "0.1.0",
   "private": true,
-  "homepage": "git@github.com:staccDOTsol/gumdrop",
+  "homepage": "freecope.me",
   "dependencies": {
     "serve": "latest",
     "@aws-sdk/client-lambda": "^3.38.0",
@@ -77,7 +77,7 @@
   },
   "scripts": {
     "start": "PORT=8080 react-scripts start --port 8080",
-    "build": "cd ../common && yarn && yarn build && cd ../gumdrop && react-scripts build",
+    "build": "react-scripts build",
     "eject": "react-scripts eject",
     "deploy:s3": "yarn export && aws s3 sync ../../build/web",
     "deploy:ar": "yarn export && arweave deploy-dir  ../../build/web --key-file ",
