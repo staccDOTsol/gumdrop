@@ -14,7 +14,7 @@
   },
   "scripts": {
     "bootstrap": "lerna link && lerna bootstrap",
-    "build": "cd packages/gumdrop/cors-anywhere",
+    "build": "cd packages/gumdrop/cors-anywhere && npm i",
     "start": "cd packages/gumdrop/cors-anywhere && node server.js",
     "lint": "prettier -c 'packages/*/{src,test}/**/*.{ts,tsx}' && npm run lint:eslint",
     "lint:eslint": "eslint 'packages/*/{src,test}/**/*.{ts,tsx}'",
